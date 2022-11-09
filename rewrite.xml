@@ -1,0 +1,35 @@
+<!-- SEE: https://techcommunity.microsoft.com/t5/iis-support-blog/setup-iis-with-url-rewrite-as-a-reverse-proxy-for-real-world/ba-p/846222 -->
+<!-- SEE: https://techcommunity.microsoft.com/t5/iis-support-blog/iis-acting-as-reverse-proxy-where-the-problems-start/ba-p/846259#M344 -->
+<!-- SEE: https://techcommunity.microsoft.com/t5/iis-support-blog/iis-and-url-rewrite-rewriting-the-outbound-response-contents/ba-p/846351#M345 -->
+<rewrite>
+	<rules>
+		<clear></clear>
+		<rule name="ReverseProxyInboundRule1" stopprocessing="true">
+			 <match url="(.*)"></match>
+				 <conditions logicalgrouping="MatchAll" trackallcaptures="false"></conditions>
+				<servervariables>
+				   <set name="HTTP_X_ORIGINAL_ACCEPT_ENCODING" value="{HTTP_ACCEPT_ENCODING}"></set>
+					<set name="HTTP_ACCEPT_ENCODING" value=""></set>
+			  </servervariables>
+		</rule>
+	</rules>
+<outboundrules>
+         <rule name="ReverseProxyOutboundRule1" precondition="ResponseIsHtml1">
+                <match filterbytags="None" pattern="href=(.*?)http://127.0.0.1:5000/(.*?)\s">
+                       <action type="Rewrite" value="href={R:1}http://172.173.233.167/{R:2} "></action>
+                 </match>
+           </rule>
+           <rule name="Restore-AcceptEncoding"  precondition="NeedsRestoringAcceptEncoding">
+                 <match servervariable="HTTP_ACCEPT_ENCODING" pattern="^(.*)"></match>
+                  <action type="Rewrite" value="{HTTP_X_ORIGINAL_ACCEPT_ENCODING}"> </action>
+          </rule>
+         <preconditions>
+              <precondition name="ResponseIsHtml1">
+                   <add input="{RESPONSE_CONTENT_TYPE}" pattern="^text/(.+)"></add>
+               </precondition>
+               <precondition name="NeedsRestoringAcceptEncoding">
+                      <add input="{HTTP_X_ORIGINAL_ACCEPT_ENCODING}" pattern=".+"></add>
+               </precondition>
+          </preconditions>
+     </outboundrules>
+</rewrite>
