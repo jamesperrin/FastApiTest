@@ -27,36 +27,36 @@ cfg = configparser.ConfigParser()
 cfg.read(os.path.join(workingDir, configFileName))
 UploadFolder = Path(cfg['DEFAULT']['Upload_Folder'])
 
-env_port = os.environ["PORT"]
+# env_port = os.environ["PORT"]
 
-if env_port is not None:
-    print(f"PRINT: env_port {env_port}")
-    Port = int(env_port)
+# if env_port is not None:
+#     print(f"PRINT: env_port {env_port}")
+#     Port = int(env_port)
 
-else:
-    # print(f"PRINT: env_port NOT FOUND")
-    Port = int(cfg['DEFAULT']['Port'].strip("'"))
+# else:
+#     # print(f"PRINT: env_port NOT FOUND")
+#     Port = int(cfg['DEFAULT']['Port'].strip("'"))
 
 
-@app.get("/api/v1/")
+@app.get("/")
 async def root():
     print(f"PRINT: Called /root")
     return {"message": "Hello World ROOT"}
 
 
-@app.get("/api/v1/home", status_code=status.HTTP_200_OK)
+@app.get("/home", status_code=status.HTTP_200_OK)
 async def home():
     print(f"PRINT: Called /home")
     return {"message": "Hello World HOME"}
 
 
-@app.get("/api/v1/users/me")
+@app.get("/users/me")
 async def read_user_me():
     print(f"PRINT: Called /users/me")
     return {"user_id": "the current user"}
 
 
-@app.get("/api/v1/users/{user_id}")
+@app.get("/users/{user_id}")
 async def read_user(user_id: str):
     print(f"PRINT: Called /users/{user_id}")
     return {"user_id": user_id}
@@ -71,8 +71,8 @@ if __name__ == "__main__":
     #             log_level="info", reload=True)
     # uvicorn.run("main:app", host='127.0.0.1', port=8080,
     #             log_level="info", reload=True)
-    # config = uvicorn.Config("main:app", host='127.0.0.1',
-    #                         port=5000, log_level="info")
-    config = uvicorn.Config("main:app", host='0.0.0.0', port=5000, log_level="info")
+    # config = uvicorn.Config("main:app", host='0.0.0.0', port=5000, log_level="info")
+    config = uvicorn.Config("main:app", host='127.0.0.1',
+                            port=5000, log_level="info")
     server = uvicorn.Server(config)
     server.run()
