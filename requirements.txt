@@ -1,5 +1,5 @@
-uvicorn
 fastapi
+uvicorn
 autopep8==2.0.0
 distlib==0.3.6
 filelock==3.8.0
